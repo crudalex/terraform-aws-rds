@@ -11,8 +11,9 @@ data "aws_caller_identity" "current" {}
 
 locals {
   name    = "replica-postgresql"
-  region1 = "eu-west-1"
-  region2 = "eu-central-1"
+  region1 = "ap-east-1"
+  region2 = "ap-southeast-1"
+
 
   tags = {
     Name       = local.name
@@ -21,12 +22,14 @@ locals {
   }
 
   engine                = "postgres"
-  engine_version        = "14"
-  family                = "postgres14" # DB parameter group
-  major_engine_version  = "14"         # DB option group
-  instance_class        = "db.t4g.large"
-  allocated_storage     = 20
-  max_allocated_storage = 100
+  engine_version        = "13"
+  family                = "postgres13" # DB parameter group
+  major_engine_version  = "13"         # DB option group
+  instance_class        = "db.t4g.2xlarge"
+  storage_type          = "io1"
+  iops                  = 12000
+  allocated_storage     = 400
+  max_allocated_storage = 800
   port                  = 5432
 }
 
@@ -45,6 +48,8 @@ module "master" {
   major_engine_version = local.major_engine_version
   instance_class       = local.instance_class
 
+  storage_type          = local.storage_type
+  iops                  = local.iops
   allocated_storage     = local.allocated_storage
   max_allocated_storage = local.max_allocated_storage
 
@@ -65,7 +70,29 @@ module "master" {
   skip_final_snapshot     = true
   deletion_protection     = false
 
+  create_monitoring_role          = true
+  monitoring_interval             = 60
+  monitoring_role_name            = "example-monitoring-role-name"
+  monitoring_role_use_name_prefix = true
+  monitoring_role_description     = "Description for monitoring role"
+
   tags = local.tags
+}
+
+
+################################################################################
+# RDS Automated Backups Replication Module
+################################################################################
+
+module "db_automated_backups_replication" {
+  source = "../../modules/db_instance_automated_backups_replication"
+
+  source_db_instance_arn = module.master.db_instance_arn
+  kms_key_arn            = module.kms.key_arn
+
+  providers = {
+    aws = aws.region2
+  }
 }
 
 ################################################################################
@@ -110,6 +137,8 @@ module "replica" {
   instance_class       = local.instance_class
   kms_key_id           = module.kms.key_arn
 
+  storage_type          = local.storage_type
+  iops                  = local.iops
   allocated_storage     = local.allocated_storage
   max_allocated_storage = local.max_allocated_storage
 

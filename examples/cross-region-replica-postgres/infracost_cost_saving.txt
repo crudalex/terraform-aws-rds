@@ -1,0 +1,27 @@
+Project: crudalex/terraform-aws-rds/examples/cross-region-replica-postgres
+
+ Name                                                              Monthly Qty  Unit                    Monthly Cost 
+                                                                                                                     
+ module.kms.aws_kms_key.this[0]                                                                                      
+ ├─ Customer master key                                                      1  months                         $1.00 
+ ├─ Requests                                                 Monthly cost depends on usage: $0.03 per 10k requests   
+ ├─ ECC GenerateDataKeyPair requests                         Monthly cost depends on usage: $0.10 per 10k requests   
+ └─ RSA GenerateDataKeyPair requests                         Monthly cost depends on usage: $0.10 per 10k requests   
+                                                                                                                     
+ module.master.module.db_instance.aws_db_instance.this[0]                                                            
+ ├─ Database instance (on-demand, Multi-AZ, db.t4g.2xlarge)                730  hours                      $1,298.67 
+ ├─ Storage (provisioned IOPS SSD, io1)                                    400  GB                           $120.00 
+ ├─ Provisioned IOPS                                                    12,000  IOPS                       $2,880.00 
+ ├─ Additional backup storage                                Monthly cost depends on usage: $0.095 per GB            
+ └─ Performance Insights API                                 Monthly cost depends on usage: $0.01 per 1000 requests  
+                                                                                                                     
+ module.replica.module.db_instance.aws_db_instance.this[0]                                                           
+ ├─ Database instance (on-demand, Single-AZ, db.t4g.xlarge)                730  hours                        $324.85 
+ └─ Storage (general purpose SSD, gp2)                                     400  GB                            $60.00 
+                                                                                                                     
+ OVERALL TOTAL                                                                                             $4,684.52 
+──────────────────────────────────
+65 cloud resources were detected:
+∙ 3 were estimated, 2 of which include usage-based costs, see https://infracost.io/usage-file
+∙ 61 were free, rerun with --show-skipped to see details
+∙ 1 is not supported yet, rerun with --show-skipped to see details

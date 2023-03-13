@@ -31,6 +31,8 @@ locals {
   allocated_storage     = 400
   max_allocated_storage = 800
   port                  = 5432
+
+  replica_instance_class = "db.t4g.xlarge"
 }
 
 ################################################################################
@@ -137,11 +139,9 @@ module "replica" {
   engine_version       = local.engine_version
   family               = local.family
   major_engine_version = local.major_engine_version
-  instance_class       = local.instance_class
+  instance_class       = local.replica_instance_class
   kms_key_id           = module.kms.key_arn
 
-  storage_type          = local.storage_type
-  iops                  = local.iops
   allocated_storage     = local.allocated_storage
   max_allocated_storage = local.max_allocated_storage
 

@@ -76,6 +76,9 @@ module "master" {
   monitoring_role_use_name_prefix = true
   monitoring_role_description     = "Description for monitoring role"
 
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
+
   tags = local.tags
 }
 
